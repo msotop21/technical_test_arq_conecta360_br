@@ -1,150 +1,222 @@
-Conecta360 – Propuesta de Arquitectura Tecnológica
+# Propuesta de Arquitectura Tecnológica — Sistema Integral de Atención Ciudadana "Conecta360"
 
-Sistema Integral de Atención Ciudadana (SIAC)
+---
 
-📌 Descripción General
+## 📋 Contexto
 
-Conecta360 es un Sistema Integral de Atención Ciudadana diseñado para centralizar, modernizar y dar trazabilidad a la gestión de solicitudes, quejas, reclamos, sugerencias y servicios ciudadanos, habilitando una experiencia omnicanal, eficiente y auditable.
+El Sistema Integral de Atención Ciudadana **"Conecta360"** tiene como propósito centralizar, modernizar y hacer trazable la gestión de solicitudes, quejas, reclamos, sugerencias y servicios al ciudadano, habilitando una experiencia omnicanal y una operación eficiente para las áreas responsables.
 
-Este repositorio documenta la Propuesta de Arquitectura Tecnológica, que sirve como marco de referencia para el diseño, desarrollo, integración, despliegue y evolución de la plataforma.
+La propuesta abarca los componentes de aplicación y datos, integración con sistemas internos y externos, seguridad y cumplimiento, gobierno de APIs, infraestructura y operación (incluyendo consideraciones de disponibilidad, rendimiento, monitoreo y continuidad).
 
-🎯 Objetivos de la Arquitectura
-Centralizar todos los canales de atención (web, móvil, redes sociales, call center).
-Garantizar trazabilidad completa del ciclo de vida de los casos.
-Facilitar la integración con sistemas internos y externos (incluyendo legados).
-Asegurar escalabilidad, alta disponibilidad y resiliencia.
-Establecer gobierno de APIs, seguridad y observabilidad end-to-end.
-Proveer una base tecnológica sostenible y alineada a estándares.
-🏗️ Alcance de la Propuesta
+Está dirigida a actores clave como negocio, arquitectura empresarial/tecnológica, desarrollo, ciberseguridad, operaciones y proveedores, y busca alinear la implementación con buenas prácticas y estándares, asegurando una base escalable, resiliente y sostenible para el ciclo de vida de Conecta360.
 
-La arquitectura cubre:
+---
 
-Componentes de aplicación y datos
-Integración y mensajería
-Seguridad e identidad
-Gobierno de APIs
-Observabilidad y monitoreo
-Infraestructura y operación
+## 🛠️ Esquema Tecnológico
 
-Dirigida a:
+| Componente | Tecnología Seleccionada | Justificación | Alternativa Evaluada |
+|---|---|---|---|
+| **Backend** | NestJS | Alta compatibilidad con microservicios, arquitectura modular y escalable, ideal para aplicaciones grandes. | Spring Boot |
+| **Orquestación BPM** | Camunda 8 | Permite modelar flujos gubernamentales complejos con aprobaciones humanas de forma visual. | Bizagi |
+| **Base de Datos Principal** | PostgreSQL | Soporta JSONB para metadatos flexibles, extensiones GIS y licenciamiento open source. Robustez transaccional. | MySQL / Oracle |
+| **Base de Datos No Relacional** | MongoDB | Almacenamiento de logs de incidencias y estructuras JSON variables de sistemas legados. | — |
+| **BI / Analítica** | Apache Superset + BigQuery | Exportación hacia Power BI mediante conector, con costo operativo significativamente menor. | Power BI Premium |
+| **Mensajería** | Apache Kafka | Procesa millones de eventos por segundo con persistencia. | RabbitMQ |
+| **Caché / Sesión** | Redis | Alto rendimiento, baja latencia y gestión eficiente de sesiones. | Memcached |
+| **Frontend** | React.js + Next.js | Optimización SEO para el portal web y carga progresiva. | Angular, Vue.js |
+| **Identidad (SSO)** | Keycloak | Open source, compatible con OIDC y SAML para integrarse con el ID nacional. | Auth0 |
+| **IA / Chatbot** | Python (FastAPI + LangChain) | Implementación ágil de modelos de lenguaje para clasificar tickets automáticamente. | — |
+| **API Gateway** | Kong | Conectividad rápida para APIs, con capacidades de escalabilidad, seguridad y gestión de tráfico. | AWS API Gateway |
+| **Observabilidad** | Prometheus + Grafana + Loki | Sin costo por volumen de métricas, observabilidad end-to-end con auditoría completa. | Datadog |
+| **CI/CD** | GitLab | Automatización eficiente, seguridad integrada y detección temprana de errores. | Azure Pipelines |
 
-Negocio
-Arquitectura Empresarial y Tecnológica
-Desarrollo
-Ciberseguridad
-Operaciones
-Proveedores tecnológicos
-🧩 Stack Tecnológico
-Componente	Tecnología	Justificación	Alternativa
-Backend	NestJS	Arquitectura modular, orientada a microservicios	Spring Boot
-Orquestación BPM	Camunda 8	Modelado visual de procesos complejos	Bizagi
-Base de Datos Principal	PostgreSQL	Robustez transaccional, JSONB, open source	MySQL / Oracle
-Base No Relacional	MongoDB	Logs y estructuras JSON variables	—
-BI / Analítica	Apache Superset + BigQuery	Bajo costo operativo, integración BI	Power BI Premium
-Mensajería	Apache Kafka	Alta capacidad y persistencia de eventos	RabbitMQ
-Cache / Sesiones	Redis	Baja latencia y alto rendimiento	Memcached
-Frontend	React.js + Next.js	SEO, carga progresiva	Angular / Vue
-Identidad (SSO)	Keycloak	OIDC y SAML, open source	Auth0
-IA / Chatbot	FastAPI + LangChain	Clasificación automática de tickets	—
-API Gateway	Kong	Gobierno, seguridad y escalabilidad	AWS API Gateway
-Observabilidad	Prometheus + Grafana + Loki	Observabilidad sin costo por volumen	Datadog
-CI/CD	GitLab CI	Automatización y seguridad integrada	Azure Pipelines
-🧠 Patrones Arquitectónicos
+---
 
-La solución adopta los siguientes patrones:
+## 🏗️ Patrón Arquitectónico
 
-Layered Architecture
-Organización clara y gobernabilidad tecnológica.
-Microservicios
-Servicios independientes por dominio (casos, ciudadanos, notificaciones, analítica).
-Event-Driven Architecture
-Comunicación asíncrona mediante Kafka para absorber picos de carga.
-CQRS
-Escrituras transaccionales y lecturas analíticas desacopladas.
-Outbox Pattern
-Garantiza consistencia entre base de datos y mensajería.
-Adapter / Sidecar
-Integración con sistemas legados sin APIs.
-API Gateway
-Punto único de entrada, control de tráfico y seguridad.
-📐 Diagramas de Arquitectura
+Se seleccionan los siguientes patrones orientados a garantizar escalabilidad, mantenibilidad, interoperabilidad y gobernabilidad tecnológica:
 
-Los diagramas incluidos en este proyecto cubren:
+### Layered Architecture
+Mantiene orden y gobernabilidad en la solución.
 
-Diagrama de Contexto
-Diagrama de Contenedores
-Diagrama de Componentes de Alto Nivel
-Arquitectura BPM
-Alta Disponibilidad Geográfica
-Arquitectura de Identidad
-Arquitectura de Base de Datos
+### Microservicios
+Cada módulo (ciudadanos, casos, notificaciones, analítica) tiene ciclos de vida, equipos y escala independientes. La comunicación asíncrona vía Kafka desacopla los servicios y permite absorber picos de hasta **500,000 solicitudes diarias** sin bloqueo.
 
-Los diagramas se mantienen en formatos compatibles con herramientas abiertas.
+### Event-Driven Architecture
+Garantiza la escalabilidad e interoperabilidad demandada.
 
-🔌 Diseño de APIs
-Convenciones Generales
-Base URL: https://api.conecta360.gov.do/v1
-Autenticación: Authorization: Bearer <JWT>
-Estilo: REST + eventos asíncronos
-📄 REST – Casos
-Crear Caso
+### CQRS (Command Query Responsibility Segregation)
+Aplicado en el **Case Service**: las escrituras van a PostgreSQL (fuente de verdad) y las lecturas analíticas a Elasticsearch o el Data Warehouse, manteniendo **< 1.5s de respuesta** sin degradar la base transaccional.
 
-POST /cases
+### Outbox Pattern
+Asegura que un caso se guarde en la DB y se publique en Kafka de forma atómica, evitando pérdida de datos.
 
+### Adapter / Sidecar
+Para sistemas legados sin API, se despliega un adaptador que consulta sus bases de datos y traduce la información al estándar de Conecta360.
+
+### API Gateway
+Puerta de acceso única que centraliza todas las solicitudes, evita acceso directo a servicios internos o legacy, y representa control y gobierno.
+
+---
+
+## 📐 Arquitectura Tecnológica
+
+### Diagramas
+- Diagrama inicial de contenedores
+- Diagrama de componentes de alto nivel
+- Diagrama de contexto
+- Diagramas orientados al BPM
+- Alta disponibilidad geográfica
+- Diagrama de identidades
+
+> 📌 Los diagramas pueden visualizarse en [app.diagrams.net](https://app.diagrams.net/) o [mermaid.live](https://mermaid.live/).
+
+---
+
+## 🗄️ Arquitectura de Base de Datos
+
+> *(Ver diagrama de base de datos adjunto)*
+
+---
+
+## 🔌 Diseño y Estructura de APIs RESTful y Asíncronas
+
+**Base URL:** `https://api.conecta360.gov.do/v1`
+
+**Autenticación:** `Authorization: Bearer <JWT>` en todos los endpoints.
+
+---
+
+### REST: Endpoints Principales
+
+#### `POST /cases` — Crear nuevo caso
+
+```json
+// Request
 {
-  "citizen_id": "uuid",
+  "citizen_id": "c7f3a1b2-...",
   "category": "alumbrado_publico",
   "subcategory": "lampara_apagada",
-  "description": "Farola sin luz",
+  "description": "Farola en Av. Central km 3 sin luz desde hace 4 días",
   "location": { "lat": 9.9281, "lng": -84.0907 },
-  "channel": "web"
+  "channel": "web",
+  "attachments": ["https://cdn.c360.gv/uploads/img_001.jpg"]
 }
-Consultar Caso
 
-GET /cases/{case_number}
+// Response 201 Created
+{
+  "case_id": "a1b2c3d4-...",
+  "case_number": "C360-2025-00041821",
+  "status": "received",
+  "dependency": "energia_electrica",
+  "sla_deadline": "2025-07-14T18:00:00Z",
+  "tracking_url": "https://conecta360.gv/track/C360-2025-00041821"
+}
+```
 
-Respuesta incluye estado, eventos, responsable y SLA.
+---
 
-📊 REST – KPIs
+#### `GET /cases/{case_number}` — Consultar estado
 
-GET /dashboard/kpis
+```json
+// Response 200 OK
+{
+  "case_number": "C360-2025-00041821",
+  "status": "in_progress",
+  "category": "alumbrado_publico",
+  "assigned_to": { "name": "Lic. María López", "dependency": "Energía Eléctrica" },
+  "events": [
+    { "type": "received",    "at": "2025-07-10T10:32:00Z", "note": "Caso registrado" },
+    { "type": "assigned",    "at": "2025-07-10T10:34:00Z", "note": "Derivado a cuadrilla 3" },
+    { "type": "in_progress", "at": "2025-07-11T08:00:00Z", "note": "Técnico en camino" }
+  ],
+  "sla_deadline": "2025-07-14T18:00:00Z",
+  "sla_status": "on_track"
+}
+```
 
-Disponible para roles supervisor / administrador.
+---
 
-📡 Eventos Asíncronos (Kafka)
-cases.created
+#### `GET /dashboard/kpis` — Dashboard global *(rol: supervisor/admin)*
 
-Evento emitido al registrar un nuevo caso ciudadano.
+```json
+// Response 200 OK
+{
+  "period": "2025-07",
+  "total_cases": 48320,
+  "resolved": 41200,
+  "resolution_rate": 0.853,
+  "avg_resolution_hours": 22.4,
+  "by_dependency": [
+    { "code": "energia",    "cases": 12400, "avg_hours": 18.2, "satisfaction": 4.1 },
+    { "code": "transporte", "cases": 9800,  "avg_hours": 31.5, "satisfaction": 3.7 }
+  ],
+  "citizen_satisfaction_avg": 3.9
+}
+```
 
-cases.status_changed
+---
 
-Evento emitido cuando cambia el estado de un caso.
+### AsyncAPI: Eventos Kafka
 
-Los esquemas siguen el estándar AsyncAPI 2.6.
+#### Topic `cases.created`
 
-⏱️ Línea de Tiempo del Proyecto
+```yaml
+# AsyncAPI 2.6 (simplificado)
+channels:
+  cases.created:
+    subscribe:
+      summary: Nuevo caso ciudadano registrado
+      message:
+        payload:
+          type: object
+          properties:
+            case_id:     { type: string, format: uuid }
+            case_number: { type: string, example: "C360-2025-00041821" }
+            citizen_id:  { type: string, format: uuid }
+            category:    { type: string }
+            dependency:  { type: string }
+            created_at:  { type: string, format: date-time }
+          required: [case_id, case_number, citizen_id, category, dependency, created_at]
+```
 
-La línea de tiempo incluida es referencial, con el objetivo de ilustrar una ejecución ideal del proyecto, no necesariamente ajustada a una planificación real.
+#### Topic `cases.status_changed`
 
-📁 Estructura Recomendada del Repositorio
-conecta360-architecture/
-│
-├── README.md
-├── docs/
-│   ├── arquitectura/
-│   ├── diagramas/
-│   ├── seguridad/
-│   └── integraciones/
-│
-├── api/
-│   ├── openapi/
-│   └── asyncapi/
-│
-├── bpm/
-│   └── procesos/
-│
-└── referencias/
-📚 Referencias y Herramientas
-Draw.io (Diagrams.net)
-Mermaid Live
-PlantUML
+```yaml
+channels:
+  cases.status_changed:
+    subscribe:
+      summary: Cambio de estado en un caso existente
+      message:
+        payload:
+          type: object
+          properties:
+            case_id:    { type: string, format: uuid }
+            old_status: { type: string, enum: [received, assigned, in_progress, resolved, closed] }
+            new_status: { type: string, enum: [received, assigned, in_progress, resolved, closed] }
+            actor_id:   { type: string, format: uuid }
+            note:       { type: string }
+            occurred_at: { type: string, format: date-time }
+```
+
+---
+
+## 📅 Línea de Tiempo
+
+> El objetivo de esta línea de tiempo es ilustrar cómo se abordaría el proyecto de manera ejemplificada, no necesariamente acorde a la realidad.
+
+| Fase | Descripción | Estado |
+|---|---|---|
+| Fase 1 | Levantamiento de requerimientos y arquitectura base | 🔲 Planificado |
+| Fase 2 | Desarrollo de microservicios core (casos, ciudadanos) | 🔲 Planificado |
+| Fase 3 | Integración BPM, mensajería y notificaciones | 🔲 Planificado |
+| Fase 4 | Módulo de analítica, BI y dashboard | 🔲 Planificado |
+| Fase 5 | Pruebas, seguridad y despliegue productivo | 🔲 Planificado |
+
+---
+
+## 📚 Referencias
+
+- [app.diagrams.net](https://app.diagrams.net/)
+- [mermaid.live](https://mermaid.live/)
+- [plantuml.com](https://plantuml.com/)
